@@ -20,9 +20,9 @@ def _solve(obj, n: int, cap: float = CAP) -> np.ndarray:
     return w / w.sum()
 
 
-def mean_variance(mu: np.ndarray, cov: np.ndarray, risk_aversion: float = 5.0) -> np.ndarray:
+def mean_variance(mu: np.ndarray, cov: np.ndarray, risk_aversion: float = 5.0, cap: float = CAP) -> np.ndarray:
     """max w'mu - (lambda/2) w'Σw, long-only, capped."""
-    return _solve(lambda w: -(w @ mu) + 0.5 * risk_aversion * w @ cov @ w, len(mu))
+    return _solve(lambda w: -(w @ mu) + 0.5 * risk_aversion * w @ cov @ w, len(mu), cap=cap)
 
 
 def risk_parity(cov: np.ndarray) -> np.ndarray:
