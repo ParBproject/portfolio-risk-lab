@@ -1,0 +1,247 @@
+{
+  "universe": {
+    "DBC": "Commodities",
+    "EEM": "Emerging equity",
+    "EFA": "Intl developed equity",
+    "GLD": "Gold",
+    "HYG": "High yield",
+    "IEF": "7-10y Treasuries",
+    "IWM": "US small cap",
+    "LQD": "IG credit",
+    "SHY": "1-3y Treasuries",
+    "SPY": "US equity",
+    "TIP": "TIPS",
+    "TLT": "20y+ Treasuries",
+    "VNQ": "US REITs",
+    "XLB": "Materials sector",
+    "XLF": "Financials sector",
+    "XLI": "Industrials sector",
+    "XLK": "Tech sector",
+    "XLP": "Cons. staples sector",
+    "XLU": "Utilities sector",
+    "XLV": "Health care sector",
+    "XLY": "Cons. discretionary sector"
+  },
+  "sample": {
+    "returns_start": "2007-05",
+    "returns_end": "2026-09",
+    "factors_end": "2026-08",
+    "backtest_start": "2012-05"
+  },
+  "settings": {
+    "lookback_months": 60,
+    "cost_bps_per_turnover": 10.0,
+    "weight_cap": 0.3,
+    "cov_shrinkage": 0.5,
+    "mv_risk_aversion": 5.0,
+    "bl_delta": 2.5,
+    "bl_tau": 0.05,
+    "bl_views": "trailing 12m mean, skip 1m",
+    "var_level": 0.95
+  },
+  "strategies": {
+    "mean_variance": {
+      "cagr": 0.10615106094054005,
+      "vol": 0.12252128168474177,
+      "sharpe": 0.7571383327838697,
+      "max_drawdown": -0.25865731648922097,
+      "var95_monthly": 0.06479689291499106,
+      "cvar95_monthly": 0.07970641025455642,
+      "worst_month": -0.0982478147715248,
+      "months": 173,
+      "avg_monthly_turnover": 0.23489740885634497,
+      "attribution": {
+        "alpha_annual": -0.022013350263868692,
+        "alpha_t": -1.6278789091842962,
+        "r2": 0.8482751839993529,
+        "months": 172,
+        "start": "2012-05",
+        "end": "2026-08",
+        "betas": {
+          "Mkt-RF": 0.8222898299020547,
+          "SMB": -0.12123719168549216,
+          "HML": -0.09319106789256808,
+          "RMW": 0.1735903520648774,
+          "CMA": 0.08350124129192245,
+          "MOM": 0.13176622255754217
+        }
+      }
+    },
+    "risk_parity": {
+      "cagr": 0.05301474139426543,
+      "vol": 0.05445308926893326,
+      "sharpe": 0.6822700791147963,
+      "max_drawdown": -0.1271659351317499,
+      "var95_monthly": 0.024170249292305313,
+      "cvar95_monthly": 0.029312163507690763,
+      "worst_month": -0.0445184636900945,
+      "months": 173,
+      "avg_monthly_turnover": 0.08848756162373328,
+      "attribution": {
+        "alpha_annual": -0.002810283466253259,
+        "alpha_t": -0.31631344764629604,
+        "r2": 0.6617457756466756,
+        "months": 172,
+        "start": "2012-05",
+        "end": "2026-08",
+        "betas": {
+          "Mkt-RF": 0.31161045950920013,
+          "SMB": 0.0035745236121096226,
+          "HML": -0.0722107281721091,
+          "RMW": 0.07635161905204918,
+          "CMA": 0.11704901963497592,
+          "MOM": 0.009149394290500865
+        }
+      }
+    },
+    "black_litterman": {
+      "cagr": 0.09392611519478944,
+      "vol": 0.11686214361235357,
+      "sharpe": 0.6913672376215385,
+      "max_drawdown": -0.1651923542461169,
+      "var95_monthly": 0.052298569564024594,
+      "cvar95_monthly": 0.07330816013315415,
+      "worst_month": -0.09284974209919487,
+      "months": 173,
+      "avg_monthly_turnover": 0.5232724774848048,
+      "attribution": {
+        "alpha_annual": -0.019218961987324205,
+        "alpha_t": -0.9654274168913014,
+        "r2": 0.6389768034096627,
+        "months": 172,
+        "start": "2012-05",
+        "end": "2026-08",
+        "betas": {
+          "Mkt-RF": 0.6929038387306257,
+          "SMB": -0.026680711068909662,
+          "HML": -0.026030293235784107,
+          "RMW": 0.06510910738403816,
+          "CMA": 0.24073621758123387,
+          "MOM": 0.32432238237603705
+        }
+      }
+    },
+    "equal_weight": {
+      "cagr": 0.08259083313933346,
+      "vol": 0.09573787145867767,
+      "sharpe": 0.7106832038340035,
+      "max_drawdown": -0.18611073971020686,
+      "var95_monthly": 0.0408677123958432,
+      "cvar95_monthly": 0.056536343921976547,
+      "worst_month": -0.09724251621708302,
+      "months": 173,
+      "avg_monthly_turnover": 0.023379170977221073,
+      "attribution": {
+        "alpha_annual": -0.01108605186673004,
+        "alpha_t": -1.1682117527686813,
+        "r2": 0.8764329284117086,
+        "months": 172,
+        "start": "2012-05",
+        "end": "2026-08",
+        "betas": {
+          "Mkt-RF": 0.6206540391183201,
+          "SMB": 0.012204011352370935,
+          "HML": -0.0003849106014918364,
+          "RMW": 0.08303147833385739,
+          "CMA": 0.12018389267071604,
+          "MOM": -0.0074308068183452205
+        }
+      }
+    },
+    "sixty_forty": {
+      "cagr": 0.09156834045644535,
+      "vol": 0.0898594183429858,
+      "sharpe": 0.8441589900166182,
+      "max_drawdown": -0.20522210735193358,
+      "var95_monthly": 0.04000312206405042,
+      "cvar95_monthly": 0.05144620080063309,
+      "worst_month": -0.0744085943086437,
+      "months": 173,
+      "avg_monthly_turnover": 0.01580389092420814,
+      "attribution": {
+        "alpha_annual": -0.003944603622956957,
+        "alpha_t": -0.5615274213824432,
+        "r2": 0.9235792487674411,
+        "months": 172,
+        "start": "2012-05",
+        "end": "2026-08",
+        "betas": {
+          "Mkt-RF": 0.6082727590413826,
+          "SMB": -0.06565236461325583,
+          "HML": -0.07234334736066275,
+          "RMW": 0.05187798678633231,
+          "CMA": 0.051493172242875196,
+          "MOM": 0.005602072654832907
+        }
+      }
+    },
+    "spy": {
+      "cagr": 0.14447908804047005,
+      "vol": 0.14025403414653811,
+      "sharpe": 0.9224786436212975,
+      "max_drawdown": -0.2392718489616913,
+      "var95_monthly": 0.06099225045491425,
+      "cvar95_monthly": 0.0831879978255409,
+      "worst_month": -0.12487134520695053,
+      "months": 173,
+      "avg_monthly_turnover": 0.0,
+      "attribution": {
+        "alpha_annual": -0.0013146117406854013,
+        "alpha_t": -0.5400522940157907,
+        "r2": 0.9962517796726622,
+        "months": 172,
+        "start": "2012-05",
+        "end": "2026-08",
+        "betas": {
+          "Mkt-RF": 0.9869092296692794,
+          "SMB": -0.11429212012580874,
+          "HML": 0.02289837620524015,
+          "RMW": 0.05011988268023263,
+          "CMA": 0.01933626706287672,
+          "MOM": 0.0036996351309910675
+        }
+      }
+    }
+  },
+  "latest_weights": {
+    "mean_variance": {
+      "DBC": 0.3,
+      "GLD": 0.3,
+      "SPY": 0.0162,
+      "XLI": 0.0838,
+      "XLK": 0.3
+    },
+    "risk_parity": {
+      "DBC": 0.0655,
+      "EEM": 0.0268,
+      "EFA": 0.0261,
+      "GLD": 0.0429,
+      "HYG": 0.0553,
+      "IEF": 0.0638,
+      "IWM": 0.022,
+      "LQD": 0.044,
+      "SHY": 0.2783,
+      "SPY": 0.0266,
+      "TIP": 0.0719,
+      "TLT": 0.0336,
+      "VNQ": 0.0217,
+      "XLB": 0.0219,
+      "XLF": 0.028,
+      "XLI": 0.0237,
+      "XLK": 0.0223,
+      "XLP": 0.0372,
+      "XLU": 0.0307,
+      "XLV": 0.035,
+      "XLY": 0.0227
+    },
+    "black_litterman": {
+      "DBC": 0.2763,
+      "EEM": 0.3,
+      "EFA": 0.023,
+      "IWM": 0.205,
+      "XLK": 0.1779,
+      "XLV": 0.0163
+    }
+  },
+  "risk_parity_max_rc_gap": 6.569945103229724e-08
+}
