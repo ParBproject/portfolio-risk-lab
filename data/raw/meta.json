@@ -1,0 +1,29 @@
+{
+  "tickers": [
+    "SPY",
+    "IWM",
+    "EFA",
+    "EEM",
+    "IEF",
+    "TLT",
+    "SHY",
+    "LQD",
+    "HYG",
+    "TIP",
+    "GLD",
+    "DBC",
+    "VNQ",
+    "XLK",
+    "XLF",
+    "XLV",
+    "XLY",
+    "XLP",
+    "XLI",
+    "XLU",
+    "XLB"
+  ],
+  "start": "2007-01-01",
+  "end_exclusive": "2026-10-01",
+  "prices": "yfinance auto_adjust=True (dividend/split-adjusted close)",
+  "factors": "Kenneth R. French Data Library, FF5 2x3 + Momentum, monthly"
+}
