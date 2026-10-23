@@ -42,6 +42,21 @@ tested **walk-forward** against SPY, 60/40 and 1/N **after trading costs**, with
 Fama-French 5 + momentum attribution. Every number below is generated from `results/summary.json` by
 `scripts/build_readme.py` and pinned by tests.
 
+**Live app: [parbproject.github.io/portfolio-risk-lab](https://parbproject.github.io/portfolio-risk-lab/)**
+
+![Demo](docs/img/demo.gif)
+
+| Desktop | Mobile |
+|---|---|
+| ![Overview](docs/img/overview.png) | ![Mobile](docs/img/mobile.png) |
+
+## What this demonstrates
+
+- **Interactive allocator:** pick a strategy, change the weight cap and trading costs, move the window start; every metric and the
+  factor regression recompute in the browser (Node tests prove they equal the Python numbers at the published settings).
+- **Reproducible research:** frozen raw data with SHA-256 manifest, `make all` runs offline, results JSON pinned by tests,
+  this README generated from the results.
+
 ## Headline (out-of-sample {sm['backtest_start']} to {sm['returns_end']}, net of {cfg['cost_bps_per_turnover']:.0f} bps/turnover)
 
 - Best risk-adjusted result: **{NAMES[best]}**, Sharpe {st[best]['sharpe']:.2f}. {verdict}
@@ -86,6 +101,8 @@ Fama-French 5 + momentum attribution. Every number below is generated from `resu
 pip install -e .[dev]
 make all      # verify hashes, run analysis, rebuild README, ruff, pytest (offline)
 make fetch    # ONLINE: re-download (changes hashes)
+make web      # export app data, run Node parity tests, build the React app (Node 20+)
+make deploy   # publish web/dist to the gh-pages branch
 ```
 """
 (ROOT / "README.md").write_text(text)
