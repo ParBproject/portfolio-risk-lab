@@ -1,5 +1,7 @@
 # portfolio-risk-lab
 
+[![CI](https://github.com/ParBproject/portfolio-risk-lab/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ParBproject/portfolio-risk-lab/actions/workflows/ci.yml)
+
 Mean-variance, risk-parity and Black-Litterman portfolios on a 21-ETF multi-asset universe,
 tested **walk-forward** against SPY, 60/40 and 1/N **after trading costs**, with VaR/CVaR, drawdowns and
 Fama-French 5 + momentum attribution. Every number below is generated from `results/summary.json` by
@@ -47,6 +49,17 @@ Fama-French 5 + momentum attribution. Every number below is generated from `resu
 | Equal weight (1/N) | -1.11% | -1.17 | 0.62 | 0.01 | -0.00 | 0.08 | 0.12 | -0.01 | 0.88 |
 | 60/40 SPY/IEF | -0.39% | -0.56 | 0.61 | -0.07 | -0.07 | 0.05 | 0.05 | 0.01 | 0.92 |
 | SPY | -0.13% | -0.54 | 0.99 | -0.11 | 0.02 | 0.05 | 0.02 | 0.00 | 1.00 |
+
+## Data provenance
+
+- **Prices:** yfinance auto_adjust=True (dividend/split-adjusted close), from Yahoo Finance via `yfinance`, for 21 ETFs.
+  Requested 2007-01-01 to 2026-10-01 (end exclusive).
+- **Factors:** Kenneth R. French Data Library, FF5 2x3 + Momentum, monthly, as published on Kenneth R. French's website.
+- **Frozen snapshot:** 4 files in `data/raw/`, each SHA-256 hashed in `data/MANIFEST.json`.
+  `make all` checks the hashes and fails if any file has changed.
+- **Refresh:** `make fetch` re-downloads everything, which changes the hashes and every result.
+- **Terms:** the snapshot is committed only so the study reproduces. Check Yahoo's terms before reusing the
+  price data. The French factors are published freely for research.
 
 ## Method
 

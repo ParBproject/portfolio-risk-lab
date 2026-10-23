@@ -4,6 +4,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 S = json.loads((ROOT / "results" / "summary.json").read_text())
+META = json.loads((ROOT / "data" / "raw" / "meta.json").read_text())
+MANIFEST = json.loads((ROOT / "data" / "MANIFEST.json").read_text())
 NAMES = {"mean_variance": "Mean-variance", "risk_parity": "Risk parity (ERC)", "black_litterman": "Black-Litterman",
          "equal_weight": "Equal weight (1/N)", "sixty_forty": "60/40 SPY/IEF", "spy": "SPY"}
 
@@ -35,7 +37,23 @@ arows = "\n".join(
     + f" | {m['attribution']['r2']:.2f} |" for k, m in st.items())
 uni = ", ".join(f"{t} ({c})" for t, c in S["universe"].items())
 att = st["mean_variance"]["attribution"]
+PROVENANCE = "\n".join([
+    "## Data provenance",
+    "",
+    f"- **Prices:** {META['prices']}, from Yahoo Finance via `yfinance`, for {len(META['tickers'])} ETFs.",
+    f"  Requested {META['start']} to {META['end_exclusive']} (end exclusive).",
+    f"- **Factors:** {META['factors']}, as published on Kenneth R. French's website.",
+    f"- **Frozen snapshot:** {len(MANIFEST)} files in `data/raw/`, each SHA-256 hashed in `data/MANIFEST.json`.",
+    "  `make all` checks the hashes and fails if any file has changed.",
+    "- **Refresh:** `make fetch` re-downloads everything, which changes the hashes and every result.",
+    "- **Terms:** the snapshot is committed only so the study reproduces. Check Yahoo's terms before reusing the",
+    "  price data. The French factors are published freely for research.",
+    "",
+    "",
+])
 text = f"""# portfolio-risk-lab
+
+[![CI](https://github.com/ParBproject/portfolio-risk-lab/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ParBproject/portfolio-risk-lab/actions/workflows/ci.yml)
 
 Mean-variance, risk-parity and Black-Litterman portfolios on a {len(S['universe'])}-ETF multi-asset universe,
 tested **walk-forward** against SPY, 60/40 and 1/N **after trading costs**, with VaR/CVaR, drawdowns and
@@ -75,7 +93,7 @@ Fama-French 5 + momentum attribution. Every number below is generated from `resu
 |---|---|---|---|---|---|---|---|---|---|
 {arows}
 
-## Method
+{PROVENANCE}## Method
 
 - **Data:** dividend-adjusted daily closes (yfinance) for {uni}; month-end returns {sm['returns_start']} to
   {sm['returns_end']}. Factors: Ken French Data Library (through {sm['factors_end']}). Raw files are frozen and
