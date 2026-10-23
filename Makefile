@@ -13,3 +13,14 @@ lint:
 	$(PY) -m ruff check .
 test:
 	$(PY) -m pytest -q
+
+## Web app (needs Node 20+). `web` rebuilds data + bundle; `web-test` checks browser math against Python.
+.PHONY: web-data web-test web deploy
+web-data:
+	PYTHONPATH=src $(PY) scripts/build_web_data.py
+web-test:
+	cd web && npm ci --silent && npm test
+web: web-data web-test
+	cd web && npm run build
+deploy: web    ## publish web/dist to the gh-pages branch
+	bash scripts/deploy_pages.sh
