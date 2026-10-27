@@ -1,4 +1,4 @@
-"""Run every strategy walk-forward and write results/summary.json + results/*.csv."""
+"""Run the walk-forward backtest and write results/summary.json and the CSVs."""
 import json
 from pathlib import Path
 

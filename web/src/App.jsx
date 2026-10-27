@@ -175,9 +175,8 @@ export default function App() {
         <div className="eyebrow">Portfolio Risk Lab · walk-forward, after costs</div>
         <h1>Do optimizers beat <span>SPY and 60/40</span> on a 21-ETF universe?</h1>
         <p className="lede">
-          Mean-variance, risk parity and Black-Litterman, re-estimated every month from the prior {app.settings.lookback_months}{" "}
-          months only, {app.sample.backtest_start} to {app.sample.returns_end}. Every number is recomputed in your browser from the
-          exported monthly returns and matches the Python results at the published settings.
+          Mean-variance, risk parity, and Black-Litterman, re-estimated each month on the prior{" "}
+          {app.settings.lookback_months} months only, {app.sample.backtest_start} to {app.sample.returns_end}, net of the cost below.
         </p>
       </header>
 
@@ -208,8 +207,8 @@ export default function App() {
           </label>
         </div>
         <p className="note" style={{ margin: "8px 0 0" }}>
-          {isDefault ? "Published settings: these numbers equal results/summary.json." :
-            "Custom settings: recomputed live from the same monthly returns (not in the published results)."}
+          {isDefault ? "Default settings, as in the README table." :
+            "Cap, cost, or start date differ from that table."}
         </p>
       </section>
 

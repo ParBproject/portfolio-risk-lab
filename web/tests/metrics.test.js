@@ -1,4 +1,5 @@
-// Browser math must reproduce the Python results exactly (to 1e-9) at the published settings.
+// Compare the browser metrics with results/summary.json at the default settings.
+// The checks below allow an absolute error under 1e-6.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { test } from "node:test";

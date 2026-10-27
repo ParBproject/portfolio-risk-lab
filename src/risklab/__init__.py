@@ -1,1 +1,1 @@
-"""Portfolio risk lab: allocation, walk-forward backtests and risk attribution on an ETF universe."""
+"""Walk-forward ETF allocation, risk metrics, and a factor regression."""

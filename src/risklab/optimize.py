@@ -1,4 +1,4 @@
-"""Long-only allocators. All take a covariance (and returns where needed) estimated on past data only."""
+"""Long-only allocators. Callers pass a covariance estimated on past returns only."""
 import numpy as np
 from scipy.optimize import minimize
 
@@ -6,7 +6,7 @@ CAP = 0.30  # max weight per ETF
 
 
 def shrink_cov(r: np.ndarray, delta: float = 0.5) -> np.ndarray:
-    """Sample covariance shrunk toward its diagonal (fixed intensity, documented not tuned)."""
+    """Sample covariance shrunk toward its diagonal."""
     s = np.cov(r, rowvar=False)
     return (1 - delta) * s + delta * np.diag(np.diag(s))
 

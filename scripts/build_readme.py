@@ -1,4 +1,4 @@
-"""Generate README.md from results/summary.json (no hand-typed numbers)."""
+"""Write README.md from results/summary.json."""
 import json
 from pathlib import Path
 
@@ -21,12 +21,17 @@ best = max(st, key=lambda k: st[k]["sharpe"])
 OPT = ("mean_variance", "risk_parity", "black_litterman")
 bench_sr = max(st["spy"]["sharpe"], st["sixty_forty"]["sharpe"])
 beat = [NAMES[k] for k in OPT if st[k]["sharpe"] > bench_sr]
-verdict = (f"Optimizers beating the best of SPY/60-40 on Sharpe: {', '.join(beat)}." if beat else
-           "None of the three optimizers beat plain SPY or 60/40 on Sharpe over this window; they are reported as-is,"
-           " not tuned until they do.")
+verdict = (
+    f"{', '.join(beat)} beat the better of SPY and 60/40 on Sharpe."
+    if beat
+    else "None of the three optimizers beat the better of SPY and 60/40 on Sharpe."
+)
 sig = [NAMES[k] for k in st if abs(st[k]["attribution"]["alpha_t"]) >= 2]
-alpha_line = ("Strategies with |t(alpha)| >= 2: " + ", ".join(sig) if sig else
-              "No strategy shows a statistically significant factor alpha (all |t| < 2)")
+alpha_line = (
+    "Alpha t-stat of 2 or more: " + ", ".join(sig) + "."
+    if sig
+    else "No alpha t-stat reaches 2."
+)
 rows = "\n".join(
     f"| {NAMES[k]} | {pct(m['cagr'])} | {pct(m['vol'])} | {m['sharpe']:.2f} | {pct(m['max_drawdown'])} | "
     f"{pct(m['var95_monthly'])} | {pct(m['cvar95_monthly'])} | {pct(m['avg_monthly_turnover'])} |"
@@ -35,32 +40,18 @@ arows = "\n".join(
     f"| {NAMES[k]} | {pct(m['attribution']['alpha_annual'])} | {m['attribution']['alpha_t']:.2f} | "
     + " | ".join(f"{m['attribution']['betas'][f]:.2f}" for f in ("Mkt-RF", "SMB", "HML", "RMW", "CMA", "MOM"))
     + f" | {m['attribution']['r2']:.2f} |" for k, m in st.items())
-uni = ", ".join(f"{t} ({c})" for t, c in S["universe"].items())
+tickers = ", ".join(S["universe"])
 att = st["mean_variance"]["attribution"]
-PROVENANCE = "\n".join([
-    "## Data provenance",
-    "",
-    f"- **Prices:** {META['prices']}, from Yahoo Finance via `yfinance`, for {len(META['tickers'])} ETFs.",
-    f"  Requested {META['start']} to {META['end_exclusive']} (end exclusive).",
-    f"- **Factors:** {META['factors']}, as published on Kenneth R. French's website.",
-    f"- **Frozen snapshot:** {len(MANIFEST)} files in `data/raw/`, each SHA-256 hashed in `data/MANIFEST.json`.",
-    "  `make all` checks the hashes and fails if any file has changed.",
-    "- **Refresh:** `make fetch` re-downloads everything, which changes the hashes and every result.",
-    "- **Terms:** the snapshot is committed only so the study reproduces. Check Yahoo's terms before reusing the",
-    "  price data. The French factors are published freely for research.",
-    "",
-    "",
-])
+rp, spy = st["risk_parity"], st["spy"]
 text = f"""# portfolio-risk-lab
 
 [![CI](https://github.com/ParBproject/portfolio-risk-lab/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ParBproject/portfolio-risk-lab/actions/workflows/ci.yml)
 
-Mean-variance, risk-parity and Black-Litterman portfolios on a {len(S['universe'])}-ETF multi-asset universe,
-tested **walk-forward** against SPY, 60/40 and 1/N **after trading costs**, with VaR/CVaR, drawdowns and
-Fama-French 5 + momentum attribution. Every number below is generated from `results/summary.json` by
-`scripts/build_readme.py` and pinned by tests.
+Walk-forward mean-variance, risk parity, and Black-Litterman on {len(S['universe'])} ETFs,
+net of trading costs, compared with SPY, 60/40, and equal weight. Monthly historical VaR and CVaR,
+drawdowns, and an OLS regression on the Fama-French five factors plus momentum.
 
-**Live app: [parbproject.github.io/portfolio-risk-lab](https://parbproject.github.io/portfolio-risk-lab/)**
+App: [parbproject.github.io/portfolio-risk-lab](https://parbproject.github.io/portfolio-risk-lab/)
 
 ![Demo](docs/img/demo.gif)
 
@@ -68,60 +59,77 @@ Fama-French 5 + momentum attribution. Every number below is generated from `resu
 |---|---|
 | ![Overview](docs/img/overview.png) | ![Mobile](docs/img/mobile.png) |
 
-## What this demonstrates
+## Results
 
-- **Interactive allocator:** pick a strategy, change the weight cap and trading costs, move the window start; every metric and the
-  factor regression recompute in the browser (Node tests prove they equal the Python numbers at the published settings).
-- **Reproducible research:** frozen raw data with SHA-256 manifest, `make all` runs offline, results JSON pinned by tests,
-  this README generated from the results.
+{sm['backtest_start']} to {sm['returns_end']}, after {cfg['cost_bps_per_turnover']:.0f} bps per unit of turnover.
+Weights each month use only the prior {cfg['lookback_months']} months.
 
-## Headline (out-of-sample {sm['backtest_start']} to {sm['returns_end']}, net of {cfg['cost_bps_per_turnover']:.0f} bps/turnover)
-
-- Best risk-adjusted result: **{NAMES[best]}**, Sharpe {st[best]['sharpe']:.2f}. {verdict}
-- Risk parity cut max drawdown to {pct(st['risk_parity']['max_drawdown'])} vs {pct(st['spy']['max_drawdown'])} for SPY,
-  at {pct(st['risk_parity']['vol'])} volatility vs {pct(st['spy']['vol'])}.
-- {alpha_line}; mean-variance: {pct(att['alpha_annual'])} a year,
-  t = {att['alpha_t']:.2f}.
+{NAMES[best]} has the highest Sharpe, {st[best]['sharpe']:.2f}. {verdict}
+Risk parity's max drawdown is {pct(rp['max_drawdown'])}, against {pct(spy['max_drawdown'])} for SPY,
+with volatility {pct(rp['vol'])} versus {pct(spy['vol'])}. {alpha_line}
+Mean-variance alpha is {pct(att['alpha_annual'])} a year (t = {att['alpha_t']:.2f}).
 
 | Strategy | CAGR | Vol | Sharpe | Max DD | VaR95 (1m) | CVaR95 (1m) | Avg turnover / month |
 |---|---|---|---|---|---|---|---|
 {rows}
 
-### Fama-French 5 + momentum attribution ({att['start']} to {att['end']})
+### Factor regression ({att['start']} to {att['end']})
 
 | Strategy | Alpha (ann.) | t(alpha) | Mkt-RF | SMB | HML | RMW | CMA | MOM | R² |
 |---|---|---|---|---|---|---|---|---|---|
 {arows}
 
-{PROVENANCE}## Method
+## Data
 
-- **Data:** dividend-adjusted daily closes (yfinance) for {uni}; month-end returns {sm['returns_start']} to
-  {sm['returns_end']}. Factors: Ken French Data Library (through {sm['factors_end']}). Raw files are frozen and
-  SHA-256 hashed in `data/MANIFEST.json`.
-- **Walk-forward:** each month's weights use only the prior {cfg['lookback_months']} months. Covariance is shrunk
-  {cfg['cov_shrinkage']:.0%} toward its diagonal. Long-only, {cfg['weight_cap']:.0%} cap per ETF (risk parity uncapped).
-- **Mean-variance:** maximise w'mu - (lambda/2) w'Σw, lambda = {cfg['mv_risk_aversion']}, mu = trailing sample mean.
-- **Risk parity:** equal risk contribution.
-- **Black-Litterman:** equal-weight prior (delta = {cfg['bl_delta']}, tau = {cfg['bl_tau']}); absolute views from the
-  {cfg['bl_views']}; posterior fed to the same mean-variance optimizer.
-- **Risk:** historical {cfg['var_level']:.0%} VaR/CVaR on monthly net returns; drawdowns from the net wealth path.
+Prices: {META['prices']}, from Yahoo Finance via `yfinance`, {len(META['tickers'])} ETFs,
+requested {META['start']} to {META['end_exclusive']} (end exclusive).
+Factors: {META['factors']}.
 
-## Limits
+Month-end simple returns run from {sm['returns_start']} to {sm['returns_end']}.
+The factor files end in {sm['factors_end']}. Tickers: {tickers}.
 
-- Equal-weight is the BL prior because ETF market caps are not a meaningful "market portfolio" here.
-- Momentum views make BL turnover high ({pct(st['black_litterman']['avg_monthly_turnover'])} a month); costs are charged.
-- Attribution t-stats are plain OLS, not Newey-West. Survivorship is not an issue (all ETFs are live) but
-  the universe was chosen in 2026.
+`data/raw/` has {len(MANIFEST)} files. `data/MANIFEST.json` holds a SHA-256 for each one,
+and `make all` fails if a file has changed. `make fetch` downloads a new copy and will change
+the hashes and the results. The prices are stored so the study can be rerun offline;
+Yahoo's terms still apply. The French factors are published for research use.
 
-## Reproduce
+## Method
+
+- Sample covariance, shrunk {cfg['cov_shrinkage']:.0%} toward its diagonal.
+  Long only. Mean-variance and Black-Litterman cap each ETF at {cfg['weight_cap']:.0%}.
+  Risk parity is uncapped.
+- Mean-variance: maximise w'mu - (lambda/2) w'Σw, lambda = {cfg['mv_risk_aversion']}.
+  mu is the trailing sample mean.
+- Risk parity: equal risk contribution.
+- Black-Litterman: equal-weight prior (delta = {cfg['bl_delta']}, tau = {cfg['bl_tau']}).
+  Absolute views ({cfg['bl_views']}) on every ETF. The posterior mean goes into the same
+  mean-variance optimizer.
+- Historical {cfg['var_level']:.0%} VaR and CVaR on monthly net returns.
+  Drawdowns are taken from the net wealth path.
+- The regression uses Mkt-RF, SMB, HML, RMW, CMA, and MOM. t-stats are classical OLS,
+  not Newey-West.
+
+## Caveats
+
+- The Black-Litterman prior is equal weight. There is no market-cap portfolio for this ETF list.
+- Black-Litterman turnover averages {pct(st['black_litterman']['avg_monthly_turnover'])} a month,
+  because the views follow recent returns. Costs are deducted.
+- The ETFs were all still listed when the list was chosen in 2026, so funds that had already
+  closed are not in the sample.
+
+## Run
 
 ```bash
-pip install -e .[dev]
-make all      # verify hashes, run analysis, rebuild README, ruff, pytest (offline)
-make fetch    # ONLINE: re-download (changes hashes)
-make web      # export app data, run Node parity tests, build the React app (Node 20+)
+pip install -e ".[dev]"
+make all      # check hashes, rerun the backtest, rewrite this file, ruff, pytest
+make fetch    # re-download prices and factors (online; changes the hashes)
+make web      # export the app data, run the Node tests, build the app (Node 20+)
 make deploy   # publish web/dist to the gh-pages branch
 ```
+
+`scripts/build_readme.py` fills the tables from `results/summary.json`.
+At the default settings (cap {cfg['weight_cap']:.0%}, {cfg['cost_bps_per_turnover']:.0f} bps) the web app
+matches those figures; `make web` checks that.
 """
 (ROOT / "README.md").write_text(text)
 print("README.md written")

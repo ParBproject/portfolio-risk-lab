@@ -25,7 +25,7 @@ web: web-data web-test
 deploy: web    ## publish web/dist to the gh-pages branch
 	bash scripts/deploy_pages.sh
 
-## ONLINE launch checks (not part of `all`): README screenshots/GIF (Playwright + ffmpeg) and link check.
+## Optional, online (not part of `all`): README screenshots (Playwright + ffmpeg) and a link check.
 .PHONY: shots links
 shots:
 	$(PY) scripts/shoot_readme.py
