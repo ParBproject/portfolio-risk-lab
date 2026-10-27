@@ -1,4 +1,4 @@
-"""Fama-French 5 + momentum time-series regression (OLS with Newey-West-free plain t-stats)."""
+"""OLS of excess returns on the Fama-French five factors plus momentum, with classical standard errors."""
 import numpy as np
 import pandas as pd
 

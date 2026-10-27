@@ -2,12 +2,11 @@
 
 [![CI](https://github.com/ParBproject/portfolio-risk-lab/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ParBproject/portfolio-risk-lab/actions/workflows/ci.yml)
 
-Mean-variance, risk-parity and Black-Litterman portfolios on a 21-ETF multi-asset universe,
-tested **walk-forward** against SPY, 60/40 and 1/N **after trading costs**, with VaR/CVaR, drawdowns and
-Fama-French 5 + momentum attribution. Every number below is generated from `results/summary.json` by
-`scripts/build_readme.py` and pinned by tests.
+Walk-forward mean-variance, risk parity, and Black-Litterman on 21 ETFs,
+net of trading costs, compared with SPY, 60/40, and equal weight. Monthly historical VaR and CVaR,
+drawdowns, and an OLS regression on the Fama-French five factors plus momentum.
 
-**Live app: [parbproject.github.io/portfolio-risk-lab](https://parbproject.github.io/portfolio-risk-lab/)**
+App: [parbproject.github.io/portfolio-risk-lab](https://parbproject.github.io/portfolio-risk-lab/)
 
 ![Demo](docs/img/demo.gif)
 
@@ -15,20 +14,15 @@ Fama-French 5 + momentum attribution. Every number below is generated from `resu
 |---|---|
 | ![Overview](docs/img/overview.png) | ![Mobile](docs/img/mobile.png) |
 
-## What this demonstrates
+## Results
 
-- **Interactive allocator:** pick a strategy, change the weight cap and trading costs, move the window start; every metric and the
-  factor regression recompute in the browser (Node tests prove they equal the Python numbers at the published settings).
-- **Reproducible research:** frozen raw data with SHA-256 manifest, `make all` runs offline, results JSON pinned by tests,
-  this README generated from the results.
+2012-05 to 2026-09, after 10 bps per unit of turnover.
+Weights each month use only the prior 60 months.
 
-## Headline (out-of-sample 2012-05 to 2026-09, net of 10 bps/turnover)
-
-- Best risk-adjusted result: **SPY**, Sharpe 0.92. None of the three optimizers beat plain SPY or 60/40 on Sharpe over this window; they are reported as-is, not tuned until they do.
-- Risk parity cut max drawdown to -12.72% vs -23.93% for SPY,
-  at 5.45% volatility vs 14.03%.
-- No strategy shows a statistically significant factor alpha (all |t| < 2); mean-variance: -2.20% a year,
-  t = -1.63.
+SPY has the highest Sharpe, 0.92. None of the three optimizers beat the better of SPY and 60/40 on Sharpe.
+Risk parity's max drawdown is -12.72%, against -23.93% for SPY,
+with volatility 5.45% versus 14.03%. No alpha t-stat reaches 2.
+Mean-variance alpha is -2.20% a year (t = -1.63).
 
 | Strategy | CAGR | Vol | Sharpe | Max DD | VaR95 (1m) | CVaR95 (1m) | Avg turnover / month |
 |---|---|---|---|---|---|---|---|
@@ -39,7 +33,7 @@ Fama-French 5 + momentum attribution. Every number below is generated from `resu
 | 60/40 SPY/IEF | 9.16% | 8.99% | 0.84 | -20.52% | 4.00% | 5.14% | 1.58% |
 | SPY | 14.45% | 14.03% | 0.92 | -23.93% | 6.10% | 8.32% | 0.00% |
 
-### Fama-French 5 + momentum attribution (2012-05 to 2026-08)
+### Factor regression (2012-05 to 2026-08)
 
 | Strategy | Alpha (ann.) | t(alpha) | Mkt-RF | SMB | HML | RMW | CMA | MOM | R² |
 |---|---|---|---|---|---|---|---|---|---|
@@ -50,43 +44,54 @@ Fama-French 5 + momentum attribution. Every number below is generated from `resu
 | 60/40 SPY/IEF | -0.39% | -0.56 | 0.61 | -0.07 | -0.07 | 0.05 | 0.05 | 0.01 | 0.92 |
 | SPY | -0.13% | -0.54 | 0.99 | -0.11 | 0.02 | 0.05 | 0.02 | 0.00 | 1.00 |
 
-## Data provenance
+## Data
 
-- **Prices:** yfinance auto_adjust=True (dividend/split-adjusted close), from Yahoo Finance via `yfinance`, for 21 ETFs.
-  Requested 2007-01-01 to 2026-10-01 (end exclusive).
-- **Factors:** Kenneth R. French Data Library, FF5 2x3 + Momentum, monthly, as published on Kenneth R. French's website.
-- **Frozen snapshot:** 4 files in `data/raw/`, each SHA-256 hashed in `data/MANIFEST.json`.
-  `make all` checks the hashes and fails if any file has changed.
-- **Refresh:** `make fetch` re-downloads everything, which changes the hashes and every result.
-- **Terms:** the snapshot is committed only so the study reproduces. Check Yahoo's terms before reusing the
-  price data. The French factors are published freely for research.
+Prices: yfinance auto_adjust=True (dividend/split-adjusted close), from Yahoo Finance via `yfinance`, 21 ETFs,
+requested 2007-01-01 to 2026-10-01 (end exclusive).
+Factors: Kenneth R. French Data Library, FF5 2x3 + Momentum, monthly.
+
+Month-end simple returns run from 2007-05 to 2026-09.
+The factor files end in 2026-08. Tickers: DBC, EEM, EFA, GLD, HYG, IEF, IWM, LQD, SHY, SPY, TIP, TLT, VNQ, XLB, XLF, XLI, XLK, XLP, XLU, XLV, XLY.
+
+`data/raw/` has 4 files. `data/MANIFEST.json` holds a SHA-256 for each one,
+and `make all` fails if a file has changed. `make fetch` downloads a new copy and will change
+the hashes and the results. The prices are stored so the study can be rerun offline;
+Yahoo's terms still apply. The French factors are published for research use.
 
 ## Method
 
-- **Data:** dividend-adjusted daily closes (yfinance) for DBC (Commodities), EEM (Emerging equity), EFA (Intl developed equity), GLD (Gold), HYG (High yield), IEF (7-10y Treasuries), IWM (US small cap), LQD (IG credit), SHY (1-3y Treasuries), SPY (US equity), TIP (TIPS), TLT (20y+ Treasuries), VNQ (US REITs), XLB (Materials sector), XLF (Financials sector), XLI (Industrials sector), XLK (Tech sector), XLP (Cons. staples sector), XLU (Utilities sector), XLV (Health care sector), XLY (Cons. discretionary sector); month-end returns 2007-05 to
-  2026-09. Factors: Ken French Data Library (through 2026-08). Raw files are frozen and
-  SHA-256 hashed in `data/MANIFEST.json`.
-- **Walk-forward:** each month's weights use only the prior 60 months. Covariance is shrunk
-  50% toward its diagonal. Long-only, 30% cap per ETF (risk parity uncapped).
-- **Mean-variance:** maximise w'mu - (lambda/2) w'Σw, lambda = 5.0, mu = trailing sample mean.
-- **Risk parity:** equal risk contribution.
-- **Black-Litterman:** equal-weight prior (delta = 2.5, tau = 0.05); absolute views from the
-  trailing 12m mean, skip 1m; posterior fed to the same mean-variance optimizer.
-- **Risk:** historical 95% VaR/CVaR on monthly net returns; drawdowns from the net wealth path.
+- Sample covariance, shrunk 50% toward its diagonal.
+  Long only. Mean-variance and Black-Litterman cap each ETF at 30%.
+  Risk parity is uncapped.
+- Mean-variance: maximise w'mu - (lambda/2) w'Σw, lambda = 5.0.
+  mu is the trailing sample mean.
+- Risk parity: equal risk contribution.
+- Black-Litterman: equal-weight prior (delta = 2.5, tau = 0.05).
+  Absolute views (trailing 12m mean, skip 1m) on every ETF. The posterior mean goes into the same
+  mean-variance optimizer.
+- Historical 95% VaR and CVaR on monthly net returns.
+  Drawdowns are taken from the net wealth path.
+- The regression uses Mkt-RF, SMB, HML, RMW, CMA, and MOM. t-stats are classical OLS,
+  not Newey-West.
 
-## Limits
+## Caveats
 
-- Equal-weight is the BL prior because ETF market caps are not a meaningful "market portfolio" here.
-- Momentum views make BL turnover high (52.33% a month); costs are charged.
-- Attribution t-stats are plain OLS, not Newey-West. Survivorship is not an issue (all ETFs are live) but
-  the universe was chosen in 2026.
+- The Black-Litterman prior is equal weight. There is no market-cap portfolio for this ETF list.
+- Black-Litterman turnover averages 52.33% a month,
+  because the views follow recent returns. Costs are deducted.
+- The ETFs were all still listed when the list was chosen in 2026, so funds that had already
+  closed are not in the sample.
 
-## Reproduce
+## Run
 
 ```bash
-pip install -e .[dev]
-make all      # verify hashes, run analysis, rebuild README, ruff, pytest (offline)
-make fetch    # ONLINE: re-download (changes hashes)
-make web      # export app data, run Node parity tests, build the React app (Node 20+)
+pip install -e ".[dev]"
+make all      # check hashes, rerun the backtest, rewrite this file, ruff, pytest
+make fetch    # re-download prices and factors (online; changes the hashes)
+make web      # export the app data, run the Node tests, build the app (Node 20+)
 make deploy   # publish web/dist to the gh-pages branch
 ```
+
+`scripts/build_readme.py` fills the tables from `results/summary.json`.
+At the default settings (cap 30%, 10 bps) the web app
+matches those figures; `make web` checks that.

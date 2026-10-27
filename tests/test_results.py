@@ -1,4 +1,4 @@
-"""Pin headline numbers so any change to data or method shows up in review."""
+"""Check the summary figures printed in the README."""
 import json
 from pathlib import Path
 

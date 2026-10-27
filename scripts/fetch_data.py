@@ -1,4 +1,4 @@
-"""ONLINE ONLY: download monthly ETF total-return prices and Fama-French factors. Outputs are frozen."""
+"""Download adjusted daily ETF closes and Ken French factor files into data/raw. Online."""
 import io
 import json
 import urllib.request

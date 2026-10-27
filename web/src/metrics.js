@@ -1,5 +1,5 @@
-// Pure metric functions. They mirror src/risklab/risk.py and attribution.py exactly; tests/metrics.test.js
-// checks them against results/summary.json.
+// Same calculations as src/risklab/risk.py and attribution.py.
+// tests/metrics.test.js compares them with results/summary.json.
 
 export const mean = (a) => a.reduce((s, x) => s + x, 0) / a.length;
 export const std = (a) => {
