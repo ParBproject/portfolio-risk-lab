@@ -6,14 +6,3 @@ __pycache__/
 *.egg-info/
 web/node_modules/
 web/dist/
-
-# local agent tooling
-.cursor/
-.cursorrules
-AGENTS.md
-agent-notes.md
-AGENT_NOTES.md
-prompts/
-plans/
-PLAN.md
-plan.md
