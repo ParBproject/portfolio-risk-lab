@@ -12,6 +12,12 @@ def shrink_cov(r: np.ndarray, delta: float = 0.5) -> np.ndarray:
 
 
 def _solve(obj, n: int, cap: float = CAP) -> np.ndarray:
+    # No long-only book can sum to 1 when the cap is tighter than 1/n. SLSQP then
+    # stops on the bounds (res.success is false) and renormalising those weights
+    # would break the cap. A linesearch warning on a feasible point is left alone:
+    # some risk-parity windows do that while already meeting the cap and the budget.
+    if cap * n < 1.0 - 1e-9:
+        raise ValueError(f"infeasible weight cap: {cap} * {n} = {cap * n:.6g} < 1")
     x0 = np.full(n, 1.0 / n)
     res = minimize(obj, x0, method="SLSQP", bounds=[(0.0, cap)] * n,
                    constraints=[{"type": "eq", "fun": lambda w: w.sum() - 1.0}],
